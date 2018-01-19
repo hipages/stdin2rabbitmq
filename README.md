@@ -31,11 +31,11 @@ amqp://guest:guest@localhost:5672/
 
 the result
 ```
-./rabbitmqadmin get queue=asdf
+./rabbitmqadmin get queue=myqueue
 +-------------+----------+---------------+---------+---------------+------------------+-------------+
 | routing_key | exchange | message_count | payload | payload_bytes | payload_encoding | redelivered |
 +-------------+----------+---------------+---------+---------------+------------------+-------------+
-| asdf        |          | 22            | asdf    | 4             | string           | True        |
+| myqueue     |          | 22            | asdf    | 4             | string           | True        |
 +-------------+----------+---------------+---------+---------------+------------------+-------------+
 ```
 
