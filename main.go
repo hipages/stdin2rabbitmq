@@ -24,7 +24,7 @@ func read_in_stdin(debug bool) string {
   // https://flaviocopes.com/go-shell-pipes/
 
   info, err := os.Stdin.Stat()
-  failOnError(err, "Failed to connect to RabbitMQ")
+  failOnError(err, "Failed to connect to stdin")
 
   if info.Mode()&os.ModeCharDevice != 0 || info.Size() <= 0 {
     fmt.Println("The command is intended to work with pipes.")
