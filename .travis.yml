@@ -36,6 +36,9 @@ install:
 script:
   - source <(curl -sSL https://raw.githubusercontent.com/hipages/travis-tools/master/docker/script.sh)
   - docker run --rm -it -v "${PWD}":/go/src/github.com/hipages/stdin2rabbitmq -w /go/src/github.com/hipages/stdin2rabbitmq golang:1.8-alpine sh -c 'apk add --no-cache curl git && curl https://glide.sh/get | sh && glide install && CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-s" -a -x -v -o stdin2rabbitmq && rm -rf vendor'
+  - pwd
+  - ls -als
+  - find ~/ -name stdin2rabbitmq
 
 branches:
   except:
