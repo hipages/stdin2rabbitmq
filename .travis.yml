@@ -1,5 +1,7 @@
 sudo: false
 
+language: go
+
 node_js:
   - 8.2.1
 bash:
@@ -39,7 +41,7 @@ script:
   - curl https://glide.sh/get | sh
   - glide install
   - go build
-  - cp ${HOME}/build/hipages/stdin2rabbitmq/stdin2rabbitmq ${HOME}/
+  - cp ${GOPATH}/src/github.com/hipages/stdin2rabbitmq/stdin2rabbitmq ${HOME}/
 
 branches:
   except:
