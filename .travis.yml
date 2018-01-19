@@ -36,6 +36,7 @@ install:
 script:
   - source <(curl -sSL https://raw.githubusercontent.com/hipages/travis-tools/master/docker/script.sh)
   - docker run --rm -it -v "${PWD}":/go/src/github.com/hipages/stdin2rabbitmq -w /go/src/github.com/hipages/stdin2rabbitmq golang:1.8-alpine sh -c 'apk add --no-cache curl git && curl https://glide.sh/get | sh && glide install && CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-s" -a -x -v -o stdin2rabbitmq && rm -rf vendor && chown 2000:2000 stdin2rabbitmq'
+  - cp ${HOME}/build/hipages/stdin2rabbitmq/stdin2rabbitmq ${HOME}/
   - id
   - pwd
   - ls -als
@@ -50,6 +51,6 @@ deploy:
   provider: releases
   api_key:
     secure: Kd/QYRCYAeo+wbdWlokv0kzGncAT9023J0e3Eju7LdJT/9D34W3nt2/z4rEPIAQKFdKUjla5TXfO/RaH1URPL4Oid2H4azDCKEO5AxM7RfjCGBbwHaQgf0ubabcW4mUdpWIEGyhZKnaX7emQy8CQ6JDrCn/33svI2q79aS/FqQ+4UcfNgdzAQ050kI8QwPuNnmtOLk5PoRirxhJrAg+JfaFJvYHZr7Uya5ZLDUqxrzNR002Gy8OQzoltgWf2iJZoMuWK5GOVZpJKoB7/sIIcNXygnZQs9CZO0Wk7FcTtE6fwE9aAcrJP0YMwe7xcocYZy3S4dZJKc2cn/grb8ZPSPOBlwS595aI/9SyxiSLkv0sSNB0colEORK3KmInnEWP0c0Nm+yKO78OlfYWYJGsOIHezOhe6vc+2joTXU1b0kUB5rpPTn4VsPtnanZiBSdg2xl//YUOuUHzgqhm/4tSTXP/oYhgqb5vvnppZPnVlRdi3KvaHSR9a3HYGD/umXbeSo/3T9x1KQa8mQQeSCQ1wycHZl3oGu8B+KIkViWvejHcmE7q8MKI+v5TeCY/Z+iRF0VpM0Z/RpAnFgxcbqHraX46AbX2k47nNUsew0KOxCd1ZKfHjot66kqEGLbm1GvMbVQxTm4K3gkDGN4zAFHlH1yebt+/5tyyw9qDZzazMn/A=
-  file: ${HOME}/build/hipages/stdin2rabbitmq/stdin2rabbitmq
+  file: ${HOME}/stdin2rabbitmq
   on:
     repo: hipages/stdin2rabbitmq
