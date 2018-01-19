@@ -1,0 +1,51 @@
+sudo: false
+
+node_js:
+  - 8.2.1
+bash:
+  - '4.4'
+go:
+  - '1.8'
+
+services:
+  - docker
+
+cache:
+  apt: true
+  bundler: true
+  pip: true
+  yarn: true
+  directories:
+    - "$HOME/.cache/pip"
+    - "$HOME/docker"
+    - "$GEM_HOME"
+
+addons:
+  apt:
+    packages:
+      - shellcheck
+      - python-dev
+
+before_install:
+  - source <(curl -sSL https://raw.githubusercontent.com/hipages/travis-tools/master/docker/before_install.sh)
+  - mkdir -p ${HOME}/.ssh && openssl aes-256-cbc -K $encrypted_ff41493d3b6d_key -iv $encrypted_ff41493d3b6d_iv -in build/deploy_key.enc -out ${HOME}/.ssh/id_rsa -d && chmod 400 ${HOME}/.ssh/id_rsa
+
+install:
+  - source <(curl -sSL https://raw.githubusercontent.com/hipages/travis-tools/master/docker/install.sh)
+
+script:
+  - source <(curl -sSL https://raw.githubusercontent.com/hipages/travis-tools/master/docker/script.sh)
+  - docker run --rm -it -v "${PWD}":/go/src/github.com/hipages/stdin2rabbitmq -w /go/src/github.com/hipages/stdin2rabbitmq golang:1.8-alpine sh -c 'apk add --no-cache curl git && curl https://glide.sh/get | sh && glide install && CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-s" -a -x -v -o stdin2rabbitmq'
+
+branches:
+  except:
+    - "/^REL\\d+/"
+    - "/^BRANCH-.*$/"
+
+deploy:
+  provider: releases
+  api_key:
+    secure: Kd/QYRCYAeo+wbdWlokv0kzGncAT9023J0e3Eju7LdJT/9D34W3nt2/z4rEPIAQKFdKUjla5TXfO/RaH1URPL4Oid2H4azDCKEO5AxM7RfjCGBbwHaQgf0ubabcW4mUdpWIEGyhZKnaX7emQy8CQ6JDrCn/33svI2q79aS/FqQ+4UcfNgdzAQ050kI8QwPuNnmtOLk5PoRirxhJrAg+JfaFJvYHZr7Uya5ZLDUqxrzNR002Gy8OQzoltgWf2iJZoMuWK5GOVZpJKoB7/sIIcNXygnZQs9CZO0Wk7FcTtE6fwE9aAcrJP0YMwe7xcocYZy3S4dZJKc2cn/grb8ZPSPOBlwS595aI/9SyxiSLkv0sSNB0colEORK3KmInnEWP0c0Nm+yKO78OlfYWYJGsOIHezOhe6vc+2joTXU1b0kUB5rpPTn4VsPtnanZiBSdg2xl//YUOuUHzgqhm/4tSTXP/oYhgqb5vvnppZPnVlRdi3KvaHSR9a3HYGD/umXbeSo/3T9x1KQa8mQQeSCQ1wycHZl3oGu8B+KIkViWvejHcmE7q8MKI+v5TeCY/Z+iRF0VpM0Z/RpAnFgxcbqHraX46AbX2k47nNUsew0KOxCd1ZKfHjot66kqEGLbm1GvMbVQxTm4K3gkDGN4zAFHlH1yebt+/5tyyw9qDZzazMn/A=
+  file: stdin2rabbitmq
+  on:
+    repo: hipages/stdin2rabbitmq
