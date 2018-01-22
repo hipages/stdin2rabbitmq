@@ -41,3 +41,7 @@ the result
 
 job done.
 
+The main use case I have for this tool is to use it in combination with Apache's CustomLog Piped logging feature. In your apache conf:
+```
+CustomLog "|$/usr/bin/stdin2rabbitmq -host localhost -port 5555 -queue myqueue --rabbituser myuser --rabitpass mypass" "combined"
+```
