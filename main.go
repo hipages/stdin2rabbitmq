@@ -28,7 +28,8 @@ func read_in_stdin(debug bool) string {
   failOnError(err, "Failed to connect to stdin")
 
   if debug {
-    // fmt.Println("stdin file mode and permissions = " + info.Mode())
+    fmt.Println("stdin file mode and permissions:")
+    fmt.Println(info.Mode())
     fmt.Println("stdin buffer size = " + strconv.FormatInt(info.Size(), 10))
   }
 
