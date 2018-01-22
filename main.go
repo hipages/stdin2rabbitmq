@@ -34,10 +34,14 @@ func read_in_stdin(debug bool) string {
   }
 
   // if info.Mode()&os.ModeCharDevice != 0 || info.Size() <= 0 {
-  if info.Mode()&os.ModeCharDevice == os.ModeCharDevice || info.Size() <= 0 {
-    fmt.Println("The command is intended to work with pipes.")
-    fmt.Println("Usage: echo mytext | stdin2rabbitmq")
-    os.Exit(1)
+  // ModeCharDevice works on a console where you have a terminal
+  if (info.Mode()&os.ModeCharDevice == os.ModeCharDevice || info.Size() <= 0) {
+    // ModeNamedPipe is when you are ssh'd into something
+    if (info.Mode()&os.ModeNamedPipe == os.ModeNamedPipe || info.Size() <= 0) {
+      fmt.Println("The command is intended to work with pipes.")
+      fmt.Println("Usage: echo mytext | stdin2rabbitmq")
+      os.Exit(1)
+    }
   }
 
   reader := bufio.NewReader(os.Stdin)
