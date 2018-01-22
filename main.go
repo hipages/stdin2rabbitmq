@@ -20,12 +20,6 @@ func failOnError(err error, msg string) {
   }
 }
 
-func notApipe() {
-  fmt.Println("The command is intended to work with pipes.")
-  fmt.Println("Usage: echo mytext | stdin2rabbitmq")
-  os.Exit(1)
-}
-
 func read_in_stdin(debug bool) string {
   // massive copy and paste
   // https://flaviocopes.com/go-shell-pipes/
@@ -39,13 +33,12 @@ func read_in_stdin(debug bool) string {
     fmt.Println("stdin buffer size = " + strconv.FormatInt(info.Size(), 10))
   }
 
+  // removed the size test as this can return nothing but 0 on some OS's.
   // if info.Mode()&os.ModeCharDevice != 0 || info.Size() <= 0 {
-  // ModeCharDevice works on a console where you have a terminal
   if info.Mode()&os.ModeCharDevice == os.ModeCharDevice {
-    // ModeNamedPipe is when you are ssh'd into something
-    //if (info.Mode()&os.ModeNamedPipe == os.ModeNamedPipe || info.Size() <= 0) {
-    notApipe()
-    //}
+    fmt.Println("The command is intended to work with pipes.")
+    fmt.Println("Usage: echo mytext | stdin2rabbitmq")
+    os.Exit(1)
   }
 
   reader := bufio.NewReader(os.Stdin)
