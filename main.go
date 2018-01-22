@@ -65,6 +65,7 @@ func read_in_stdin(debug bool) string {
 }
 
 func post_to_rabbitmq(debug bool, host string, payload string, port string, queue string, rabbituser string, rabbitpass string) {
+  // http://www.agiratech.com/message-queues-golang-rabbitmq/
 
   if debug {
     fmt.Println("amqp://" + rabbituser + ":" + rabbitpass + "@" + host + ":" + port + "/")
