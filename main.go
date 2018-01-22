@@ -11,6 +11,7 @@ import (
   "log"
   "os"
   "strings"
+  "strconv"
 )
 
 func failOnError(err error, msg string) {
@@ -26,9 +27,15 @@ func read_in_stdin(debug bool) string {
   info, err := os.Stdin.Stat()
   failOnError(err, "Failed to connect to stdin")
 
-  if info.Mode()&os.ModeCharDevice != 0 || info.Size() <= 0 {
+  if debug {
+    // fmt.Println("stdin file mode and permissions = " + info.Mode())
+    fmt.Println("stdin buffer size = " + strconv.FormatInt(info.Size(), 10))
+  }
+
+  // if info.Mode()&os.ModeCharDevice != 0 || info.Size() <= 0 {
+  if info.Mode()&os.ModeCharDevice == os.ModeCharDevice || info.Size() <= 0 {
     fmt.Println("The command is intended to work with pipes.")
-    fmt.Println("Usage: fortune | gocowsay")
+    fmt.Println("Usage: echo mytext | stdin2rabbitmq")
     os.Exit(1)
   }
 
