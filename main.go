@@ -7,10 +7,8 @@ import (
   "bufio"
   "flag"
   "fmt"
-  "io"
   "log"
   "os"
-  "strings"
   "strconv"
 )
 
@@ -20,7 +18,7 @@ func failOnError(err error, msg string) {
   }
 }
 
-func read_in_stdin(debug bool) string {
+func read_in_stdin(debug bool) *bufio.Scanner {
   // massive copy and paste
   // https://flaviocopes.com/go-shell-pipes/
 
@@ -28,8 +26,6 @@ func read_in_stdin(debug bool) string {
   failOnError(err, "Failed to connect to stdin")
 
   if debug {
-    fmt.Println("stdin file mode and permissions:")
-    fmt.Println(info.Mode())
     fmt.Println("stdin buffer size = " + strconv.FormatInt(info.Size(), 10))
   }
 
@@ -41,27 +37,13 @@ func read_in_stdin(debug bool) string {
     os.Exit(1)
   }
 
-  reader := bufio.NewReader(os.Stdin)
-  var output []rune
+    // https://medium.com/golangspec/in-depth-introduction-to-bufio-scanner-in-golang-55483bb689b4
+    scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
+    //for scanner.Scan() {
+    //    fmt.Println(scanner.Text())
+    //}
 
-  for {
-    input, _, err := reader.ReadRune()
-    if err != nil && err == io.EOF {
-      break
-    }
-    output = append(output, input)
-  }
-
-  if debug {
-    fmt.Print("The message is: ")
-    for j := 0; j < len(output); j++ {
-      fmt.Printf("%c", output[j])
-    }
-  }
-
-  stringout := strings.TrimSuffix(string(output), "\n")
-  return stringout
-
+    return scanner
 }
 
 func post_to_rabbitmq(debug bool, host string, payload string, port string, queue string, rabbituser string, rabbitpass string) {
@@ -116,7 +98,9 @@ func main() {
   flag.Parse()
 
   log_line := read_in_stdin(*debug)
-  post_to_rabbitmq(*debug, *host, log_line, *port, *queue, *rabbituser, *rabbitpass)
+  for log_line.Scan() {
+    post_to_rabbitmq(*debug, *host, log_line.Text(), *port, *queue, *rabbituser, *rabbitpass)
+  }
 
 }
 
