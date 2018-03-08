@@ -9,7 +9,9 @@ import (
 	"github.com/streadway/amqp"
 	"log"
 	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 )
 
 func failOnError(err error, msg string) {
@@ -111,11 +113,26 @@ func main() {
 
 	conn, ch, q := connect_to_rabbitmq(*debug, *host, *port, *queue, *rabbituser, *rabbitpass)
 
-	log_line := read_in_stdin(*debug)
-	for log_line.Scan() {
-		post_to_rabbitmq(ch, *debug, log_line.Text(), q)
-	}
+	go func() {
+		log_line := read_in_stdin(*debug)
+		for log_line.Scan() {
+			post_to_rabbitmq(ch, *debug, log_line.Text(), q)
+		}
+	}()
 
-	disconnect_from_rabbitmq(conn, ch)
+	// make a channel
+	c := make(chan os.Signal, 1)
+	// accept the following signals
+	signal.Notify(c,
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGQUIT)
+
+	// Block until we receive our signal.
+	s := <-c
+	fmt.Println("Received Signal:", s)
+
+	defer disconnect_from_rabbitmq(conn, ch)
 
 }
